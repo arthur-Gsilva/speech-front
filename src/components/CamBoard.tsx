@@ -19,7 +19,7 @@ export const CamBoard = ({ cams, setCurrentVideo }: Props) => {
   );
 
   return (
-    <div className="w-full h-full overflow-auto bg-[#6495ed] rounded-lg">
+    <div className="w-full h-full overflow-y-auto bg-[#6495ed] rounded-lg">
       <div className=" px-4 pt-4 max-h-[500px] ">
         {/* Campo de pesquisa */}
         <div className="flex items-center bg-amber-100 rounded-md p-1 pl-3 mb-4">

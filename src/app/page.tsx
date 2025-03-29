@@ -1,13 +1,13 @@
 "use client";
 
 import { cameras } from "@/data/cameras";
-import useSpeechRecognition from "@/libs/speech/useVoiceRecogninition";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import Hls from "hls.js";
 import { Camera } from "@/types/Camera";
-import { closestCorners, DndContext, DragStartEvent, DragEndEvent } from "@dnd-kit/core";
+import { closestCorners, DndContext, DragEndEvent } from "@dnd-kit/core";
 import { CamBoard } from "@/components/CamBoard";
 import { DropZone } from "@/components/Dropzone";
+import useSpeechRecognition from "@/libs/speech/useVoiceRecogninition";
 
 const Page = () => {
   const [currentVideo, setCurrentVideo] = useState<string | null>(null);
@@ -41,11 +41,10 @@ const Page = () => {
   };
 
   const { isListening } = useSpeechRecognition(recording, handleCameraDetected);
+  if(isListening === false){
+    console.log('')
+  }
 
-  // Função para detectar o início do arrasto
-  const handleDragStart = (event: DragStartEvent) => {
-    setIsDragging(true); // Marca que está arrastando
-  };
 
   // Função para lidar com o fim do arrasto
   const handleDragEnd = (event: DragEndEvent) => {
@@ -63,15 +62,11 @@ const Page = () => {
       setSelectedCams((prev) => [...prev, draggedCamera]);
     }
 
+    console.log(isDragging)
+    
     setIsDragging(false); 
   };
 
-  const handleClick = useCallback((cameraUrl: string) => {
-    
-    if (!isDragging) {
-      setCurrentVideo(cameraUrl);
-    }
-  }, [isDragging]);
 
   return (
     <main className="flex items-center w-screen min-h-screen px-20 gap-6">
@@ -88,7 +83,6 @@ const Page = () => {
 
       <DndContext
         collisionDetection={closestCorners}
-        onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
         <div className="grid grid-cols-2 gap-4 mb-12">

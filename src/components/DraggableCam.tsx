@@ -17,7 +17,7 @@ const DraggableCameras = ({ cameras, setCurrentVideo }: Props) => {
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
 
-    const { source, destination, draggableId } = result;
+    const {destination, draggableId } = result;
     const draggedCamera = availableCameras.find((cam) => String(cam.id) === draggableId);
     if (!draggedCamera) return;
 
