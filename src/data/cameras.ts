@@ -31,7 +31,19 @@ export const cameras: Camera[] = [
         keyword: 'paulista',
         address: 'rua da paulista 4342',
         url: 'https://34.104.32.249.nip.io/SP055-KM055/stream.m3u8'
-    }
+    },
+    {
+        id: 6,
+        keyword: 'Arruda',
+        address: 'rua da paulista 4342',
+        url: 'https://34.104.32.249.nip.io/SP055-KM055/stream.m3u8'
+    },
+    {
+        id: 7,
+        keyword: 'Torre',
+        address: 'rua da paulista 4342',
+        url: 'https://34.104.32.249.nip.io/SP055-KM055/stream.m3u8'
+    },
     
 
 ]

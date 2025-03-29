@@ -57,17 +57,17 @@ const Page = () => {
 
     if (!draggedCamera) return;
 
-    // Se o item foi solto na dropzone, remove do CamBoard e adiciona à nova área
+    
     if (over.id === "dropzone") {
       setCams((prev) => prev.filter((cam) => cam.id !== draggedCamera.id));
       setSelectedCams((prev) => [...prev, draggedCamera]);
     }
 
-    setIsDragging(false); // Marca que o arrasto terminou
+    setIsDragging(false); 
   };
 
   const handleClick = useCallback((cameraUrl: string) => {
-    // Só chama a função de clique se não estiver arrastando
+    
     if (!isDragging) {
       setCurrentVideo(cameraUrl);
     }
@@ -93,7 +93,7 @@ const Page = () => {
       >
         <div className="grid grid-cols-2 gap-4 mb-12">
 
-          {/* Área de destino */}
+          
           <DropZone 
             selectedCams={selectedCams} 
             setCurrentVideo={setCurrentVideo} 
@@ -103,7 +103,7 @@ const Page = () => {
             cams={cams}
           />
 
-          {/* Lista de câmeras */}
+          
           <CamBoard
             cams={cams}
             setCurrentVideo={setCurrentVideo}
