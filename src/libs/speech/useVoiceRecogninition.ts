@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 
-const useSpeechRecognition = (onCameraDetected: (url: string | null) => void) => {
+const useSpeechRecognition = (isRecording: boolean, onCameraDetected: (url: string | null) => void | null) => {
   const [isListening, setIsListening] = useState<boolean>(false);
 
   useEffect(() => {
     const SpeechRecognition =
-    //@ts-expect-error não existe type para isso aqui, então estou ignorando para fazer o build
+      //@ts-expect-error não existe type para isso aqui, então estou ignorando para fazer o build
       (window).SpeechRecognition || (window).webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
@@ -20,7 +20,7 @@ const useSpeechRecognition = (onCameraDetected: (url: string | null) => void) =>
     recognition.onstart = () => setIsListening(true);
     recognition.onend = () => setIsListening(false);
 
-    //@ts-expect-error ainda assim, mesmo com isso o codigo funciona
+    //@ts-expect-error ainda assim, mesmo com isso o código funciona
     recognition.onresult = async (event) => {
       const transcript: string = event.results[event.results.length - 1][0].transcript.toLowerCase();
       console.log("Reconhecido:", transcript);
@@ -48,10 +48,16 @@ const useSpeechRecognition = (onCameraDetected: (url: string | null) => void) =>
       }
     };
 
-    recognition.start();
+    // Começar ou parar a gravação baseado no estado de isRecording
+    if (isRecording) {
+      recognition.start();
+    } else {
+      recognition.stop();
+    }
 
+    // Clean up para parar o reconhecimento quando o componente for desmontado ou se isRecording mudar
     return () => recognition.stop();
-  }, [onCameraDetected]);
+  }, [isRecording, onCameraDetected]);
 
   return { isListening };
 };

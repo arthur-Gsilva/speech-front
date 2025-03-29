@@ -31,13 +31,7 @@ export const cameras: Camera[] = [
         keyword: 'paulista',
         address: 'rua da paulista 4342',
         url: 'https://34.104.32.249.nip.io/SP055-KM055/stream.m3u8'
-    },
-    {
-        id: 6,
-        keyword: 'Agamenon',
-        address: 'rua agamenon magalhaes 3423',
-        url: "https://34.104.32.249.nip.io/SP123-KM008/stream.m3u8"
-    },
+    }
     
 
 ]
