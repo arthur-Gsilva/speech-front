@@ -23,7 +23,8 @@ export const DropZone = ({ selectedCams, setCurrentVideo, currentVideo, setSelec
 
             {selectedCams.map((item) => (
             <div 
-                className="bg-white p-2 mt-2 rounded shadow cursor-pointer" key={item.id} 
+                className="bg-white p-2 mt-2 rounded shadow cursor-pointer"
+                key={item.id} 
                 style={{ backgroundColor: item.url ===  currentVideo && currentVideo ? 'green' : '#fff'}}
                 onClick={() => setCurrentVideo(item.url)}>
                 {item.keyword}

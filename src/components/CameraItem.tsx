@@ -15,8 +15,6 @@ export const CameraItem = ({ data }: Props) => {
     id: String(data.id),
   });
 
-  
-
   const style = {
     transition,
     transform: CSS.Transform.toString(transform),

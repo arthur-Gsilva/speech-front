@@ -4,10 +4,11 @@ import { cameras } from "@/data/cameras";
 import { useEffect, useRef, useState } from "react";
 import Hls from "hls.js";
 import { Camera } from "@/types/Camera";
-import { closestCorners, DndContext, DragEndEvent } from "@dnd-kit/core";
+import { closestCorners, DndContext, DragEndEvent, DragOverlay, DragStartEvent  } from "@dnd-kit/core";
 import { CamBoard } from "@/components/CamBoard";
 import { DropZone } from "@/components/Dropzone";
 import useSpeechRecognition from "@/libs/speech/useVoiceRecogninition";
+import { CameraItem } from "@/components/CameraItem";
 
 const Page = () => {
   const [currentVideo, setCurrentVideo] = useState<string | null>(null);
@@ -15,7 +16,8 @@ const Page = () => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [cams, setCams] = useState<Camera[]>(cameras);
   const [selectedCams, setSelectedCams] = useState<Camera[]>([]);
-  const [isDragging, setIsDragging] = useState(false); 
+  const [ , setIsDragging] = useState(false); 
+  const [activeCamera, setActiveCamera] = useState<Camera | undefined>();
 
   useEffect(() => {
     if (currentVideo && videoRef.current) {
@@ -40,15 +42,13 @@ const Page = () => {
     setCurrentVideo(url);
   };
 
-  const { isListening } = useSpeechRecognition(recording, handleCameraDetected);
-  if(isListening === false){
-    console.log('')
-  }
+  const { isListening } = useSpeechRecognition(recording, handleCameraDetected); 
 
 
   // Função para lidar com o fim do arrasto
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    setActiveCamera(undefined)
 
     if (!active || !over) return;
 
@@ -62,9 +62,16 @@ const Page = () => {
       setSelectedCams((prev) => [...prev, draggedCamera]);
     }
 
-    console.log(isDragging)
     
     setIsDragging(false); 
+  };
+
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    if (!active) return;
+    
+    const camera = cameras.find((cam) => String(cam.id) === active.id);
+    setActiveCamera(camera);
   };
 
 
@@ -79,15 +86,13 @@ const Page = () => {
         >
           {!recording ? <>Gravar</> : <>Parar</>}
         </button>
+        <p>{isListening ? "Ouvindo..." : "Silenciado"}</p>
       </div>
 
-      <DndContext
-        collisionDetection={closestCorners}
-        onDragEnd={handleDragEnd}
-      >
+      
+        
+      <DndContext collisionDetection={closestCorners} onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
         <div className="grid grid-cols-2 gap-4 mb-12">
-
-          
           <DropZone 
             selectedCams={selectedCams} 
             setCurrentVideo={setCurrentVideo} 
@@ -97,14 +102,17 @@ const Page = () => {
             cams={cams}
           />
 
-          
           <CamBoard
             cams={cams}
             setCurrentVideo={setCurrentVideo}
-            
           />
         </div>
+
+        <DragOverlay>
+          {activeCamera ? <CameraItem data={activeCamera} setPlay={setCurrentVideo}/> : null}
+        </DragOverlay>
       </DndContext>
+        
     </main>
   );
 };

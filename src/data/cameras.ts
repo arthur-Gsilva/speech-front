@@ -34,15 +34,33 @@ export const cameras: Camera[] = [
     },
     {
         id: 6,
-        keyword: 'Arruda',
+        keyword: 'Agamenon',
         address: 'rua da paulista 4342',
-        url: 'https://34.104.32.249.nip.io/SP055-KM055/stream.m3u8'
+        url: 'https://34.104.32.249.nip.io/SP123-KM008/stream.m3u8'
     },
     {
         id: 7,
         keyword: 'Torre',
-        address: 'rua da paulista 4342',
-        url: 'https://34.104.32.249.nip.io/SP055-KM055/stream.m3u8'
+        address: 'ortogonal moves',
+        url: 'https://34.104.32.249.nip.io/SP125-KM014/stream.m3u8'
+    },
+    {
+        id: 8,
+        keyword: 'Arruda',
+        address: 'Arrua da veneza',
+        url: 'https://34.104.32.249.nip.io/SP270-KM030/stream.m3u8'
+    },
+    {
+        id: 9,
+        keyword: 'Caxangá',
+        address: 'Rua dos escravos de jó',
+        url: 'https://34.104.32.249.nip.io/SP270-KM010/stream.m3u8'
+    },
+    {
+        id: 10,
+        keyword: 'Boa vista',
+        address: 'Próximo a rua da claramel',
+        url: 'https://34.104.32.249.nip.io/SP123-KM046/stream.m3u8'
     },
     
 
