@@ -3,9 +3,9 @@ import { Camera } from "@/types/Camera";
 export const cameras: Camera[] = [
     {
         id: 1,
-        keyword: 'Aurora',
+        keyword: 'Boa viagem',
         address: 'rua da auraro 34380',
-        url: 'https://34.104.32.249.nip.io/SP270-KM020/stream.m3u8'
+        url: 'http://localhost:8888/cam1/index.m3u8'
 
     },
     {
@@ -18,49 +18,85 @@ export const cameras: Camera[] = [
         id: 3,
         keyword: 'BR-101',
         address: 'Avenida norte de brasil',
-        url: 'https://34.104.32.249.nip.io/SP008-KM095/stream.m3u8'
+        url: 'http://localhost:8888/cam6/index.m3u8'
     },
+    // {
+    //     id: 4,
+    //     keyword: 'Mussurepe',
+    //     address: 'rua da mussurepe 45',
+    //     url: 'https://34.104.32.249.nip.io/SP270-KM012/stream.m3u8'
+    // },
+    // {
+    //     id: 5,
+    //     keyword: 'paulista',
+    //     address: 'rua da paulista 4342',
+    //     url: 'https://34.104.32.249.nip.io/SP055-KM055/stream.m3u8'
+    // },
+    // {
+    //     id: 6,
+    //     keyword: 'Agamenon',
+    //     address: 'rua da paulista 4342',
+    //     url: 'https://34.104.32.249.nip.io/SP123-KM008/stream.m3u8'
+    // },
+    // {
+    //     id: 7,
+    //     keyword: 'Torre',
+    //     address: 'ortogonal moves',
+    //     url: 'https://34.104.32.249.nip.io/SP125-KM014/stream.m3u8'
+    // },
+    // {
+    //     id: 8,
+    //     keyword: 'Arruda',
+    //     address: 'Arrua da veneza',
+    //     url: 'https://34.104.32.249.nip.io/SP270-KM030/stream.m3u8'
+    // },
+    // {
+    //     id: 9,
+    //     keyword: 'Caxangá',
+    //     address: 'Rua dos escravos de jó',
+    //     url: 'https://34.104.32.249.nip.io/SP270-KM010/stream.m3u8'
+    // },
     {
         id: 4,
-        keyword: 'Mussurepe',
-        address: 'rua da mussurepe 45',
-        url: 'https://34.104.32.249.nip.io/SP270-KM012/stream.m3u8'
+        keyword: 'Guararapes',
+        address: 'visão da rua guara',
+        url: 'http://localhost:8888/cam2/index.m3u8'
     },
     {
         id: 5,
-        keyword: 'paulista',
-        address: 'rua da paulista 4342',
-        url: 'https://34.104.32.249.nip.io/SP055-KM055/stream.m3u8'
+        keyword: 'Rua da Aurora',
+        address: 'rua da aurora 4353',
+        url: 'http://localhost:8888/cam3/index.m3u8'
     },
     {
         id: 6,
-        keyword: 'Agamenon',
-        address: 'rua da paulista 4342',
-        url: 'https://34.104.32.249.nip.io/SP123-KM008/stream.m3u8'
+        keyword: 'Derby',
+        address: 'Praça do Derby 7231',
+        url: 'http://localhost:8888/cam4/index.m3u8'
     },
     {
         id: 7,
-        keyword: 'Torre',
-        address: 'ortogonal moves',
-        url: 'https://34.104.32.249.nip.io/SP125-KM014/stream.m3u8'
+        keyword: 'Boa vista',
+        address: 'Avenida conde da boa vista',
+        url: 'http://localhost:8888/cam5/index.m3u8'
     },
     {
         id: 8,
-        keyword: 'Arruda',
-        address: 'Arrua da veneza',
-        url: 'https://34.104.32.249.nip.io/SP270-KM030/stream.m3u8'
+        keyword: 'PE-15',
+        address: 'Pernambuco numero 15',
+        url: 'http://localhost:8888/cam7/index.m3u8'
     },
     {
         id: 9,
-        keyword: 'Caxangá',
-        address: 'Rua dos escravos de jó',
-        url: 'https://34.104.32.249.nip.io/SP270-KM010/stream.m3u8'
+        keyword: 'Torre Aurora',
+        address: 'aaaa torreeee',
+        url: 'http://localhost:8888/cam8/index.m3u8'
     },
     {
         id: 10,
-        keyword: 'Boa vista',
-        address: 'Próximo a rua da claramel',
-        url: 'https://34.104.32.249.nip.io/SP123-KM046/stream.m3u8'
+        keyword: 'Caruaru',
+        address: 'Bairro de Kennedy',
+        url: 'http://localhost:8888/cam9/index.m3u8'
     },
     
 

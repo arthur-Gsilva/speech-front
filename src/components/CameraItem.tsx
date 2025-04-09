@@ -1,40 +1,50 @@
 import { Camera } from "@/types/Camera";
-import { BiCameraHome } from "react-icons/bi";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { ReactNode } from "react";
+import { formattIdCam } from "@/services/useFormatter";
 
 type Props = {
   data: Camera;
-  setPlay: (link: string) => void;
+  setPlay?: (link: string) => void;
+  children: ReactNode,
+  Drag?: boolean
 };
 
-export const CameraItem = ({ data }: Props) => {
+export const CameraItem = ({ data, children, Drag }: Props) => {
   
+    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+        id: String(data.id),
+    });
 
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
-    id: String(data.id),
-  });
+    const style = {
+        transition,
+        transform: CSS.Transform.toString(transform),
+    };
 
-  const style = {
-    transition,
-    transform: CSS.Transform.toString(transform),
-  };
+    return (
+        <div
+            className="flex items-center justify-between gap-4 bg-white rounded-md text-black cursor-pointer border-b border-b-gray-200 pb-3 px-3"
+            {...(!Drag && {
+                ref: setNodeRef,
+                ...attributes,
+                ...listeners,
+                style: style,
+              })}
+        >
+            <div className="flex items-center gap-4">
+                <div>
+                    <img src="./globo-icon.png" alt="icon da globo" />
+                </div>
+                <div>
+                    <h3 className="text-2xl text-[#2D3748] font-bold">Câmera {formattIdCam(data.id)}</h3>
+                    <h5 className=" text-[#718096]">{data.keyword}</h5>
+                </div>
+            </div>
 
-  return (
-    <div
-      className="flex items-center gap-4 bg-white p-2 rounded-md text-black cursor-pointer"
-      ref={setNodeRef}
-      {...attributes}
-      {...listeners}
-      style={style}
-    >
-      <div>
-        <BiCameraHome className="text-2xl" />
-      </div>
-      <div>
-        <h3 className="text-2xl">{data.keyword}</h3>
-        <h5 className="text-xs text-gray-800">{data.address}</h5>
-      </div>
-    </div>
-  );
+            
+
+            {children}
+        </div>
+    );
 };
