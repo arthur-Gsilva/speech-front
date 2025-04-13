@@ -4,14 +4,17 @@ import { CiSearch } from "react-icons/ci";
 import { CameraItem } from "./CameraItem";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { formattIdCam } from "@/services/useFormatter";
+import { HeaderZone } from "./ZoneHeader";
+import { useActiveCamera } from "@/contexts/CamContext";
 
 type Props = {
   cams: Camera[];
-  setCurrentVideo: (link: string) => void;
 };
 
-export const CamBoard = ({ cams, setCurrentVideo }: Props) => {
+export const CamBoard = ({ cams }: Props) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
+
+  const { setActiveCamera } = useActiveCamera();
 
   const filteredCams = cams
   .filter((cam) =>
@@ -34,18 +37,15 @@ export const CamBoard = ({ cams, setCurrentVideo }: Props) => {
           
       </div>
 
-      <div className="bg-white border border-[#07A6FF] overflow-y-auto p-4 max-h-[500px] min-w-[400px] rounded-md">
-        
-        <div className="flex justify-between items-center border-b border-b-gray-200 pb-3 mb-2">
-          <h5 className="text-[#2D3748] text-xl font-bold">Câmeras disponíveis</h5>
-          <p className="text-[#6C757D] pr-8">Lista</p>
-        </div>
+      <div className="zone">
+        <HeaderZone title="Câmeras Disponíveis" label="Lista"/>
 
         <div className="flex flex-col gap-6">
-          <SortableContext items={filteredCams.map((item) => String(item.id))} strategy={verticalListSortingStrategy}>
+          {filteredCams.length > 0 &&
+            <SortableContext items={filteredCams.map((item) => String(item.id))} strategy={verticalListSortingStrategy}>
             {filteredCams.map((item) => (
-              <div key={item.id} onClick={() => setCurrentVideo(item.url)}>
-                <CameraItem data={item} setPlay={setCurrentVideo}>
+              <div key={item.id} onClick={() => setActiveCamera(item.url)}>
+                <CameraItem data={item} setPlay={setActiveCamera}>
                 <div className="bg-[#07A6FF] px-8 font-bold py-2 rounded-lg text-white">
                   {formattIdCam(item.id)}
                 </div>
@@ -53,6 +53,12 @@ export const CamBoard = ({ cams, setCurrentVideo }: Props) => {
               </div>
             ))}
           </SortableContext>
+          }
+
+          {filteredCams.length === 0 &&
+            <h4 className="text-center mt-3 text-gray-600">Nenhuma câmera encontrada</h4>
+          }
+          
         </div>
       </div>
     </div>

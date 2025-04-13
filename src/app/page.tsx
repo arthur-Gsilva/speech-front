@@ -9,19 +9,21 @@ import { DropZone } from "@/components/Dropzone";
 import { CameraItem } from "@/components/CameraItem";
 import { VideoArea } from "@/components/VideoArea";
 import { formattIdCam } from "@/services/useFormatter";
+import { useActiveCamera } from "@/contexts/CamContext";
 
 const Page = () => {
-    const [currentVideo, setCurrentVideo] = useState<string | null>(null);
     const [cams, setCams] = useState<Camera[]>(cameras);
     const [selectedCams, setSelectedCams] = useState<Camera[]>([]);
     const [ , setIsDragging] = useState(false); 
-    const [activeCamera, setActiveCamera] = useState<Camera | undefined>();
+    const [activeCamera, setActiveDragCamera] = useState<Camera | undefined>();
+
+    const { setActiveCamera } = useActiveCamera();
 
 
   // Função para lidar com o fim do arrasto
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
-        setActiveCamera(undefined)
+        setActiveDragCamera(undefined)
 
         if (!active || !over) return;
 
@@ -42,30 +44,27 @@ const Page = () => {
         if (!active) return;
 
         const camera = cameras.find((cam) => String(cam.id) === active.id);
-        setActiveCamera(camera);
+        setActiveDragCamera(camera);
     };
 
     return (
         <main className="flex items-center gap-6 w-screen mt-3 px-20">
-            <VideoArea currentVideo={currentVideo} setCurrentVideo={setCurrentVideo}/>
+            <VideoArea />
             
-            <DndContext collisionDetection={closestCorners} onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
-                <div className="grid grid-cols-2 gap-4 mb-12">
+            <DndContext id="draggable-table-01" collisionDetection={closestCorners} onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
+                <div className="grid grid-cols-2 gap-4 mb-12 w-full">
                     <DropZone
                         selectedCams={selectedCams}
-                        setCurrentVideo={setCurrentVideo}
-                        currentVideo={currentVideo}
                         setSelectedCams={setSelectedCams}
                         setCams={setCams}
                         cams={cams}
                     />
                     <CamBoard
                         cams={cams}
-                        setCurrentVideo={setCurrentVideo}
                     />
                 </div>
                 <DragOverlay>
-                    {activeCamera ? <CameraItem data={activeCamera} setPlay={setCurrentVideo}>
+                    {activeCamera ? <CameraItem data={activeCamera} setPlay={setActiveCamera}>
                         <div className="bg-[#07A6FF] px-8 font-bold py-2 rounded-lg text-white">
                             {formattIdCam(activeCamera.id)}
                         </div>

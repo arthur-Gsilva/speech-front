@@ -3,65 +3,60 @@
 import useSpeechRecognition from "@/libs/speech/useVoiceRecogninition";
 import Hls from "hls.js";
 import { useEffect, useRef, useState } from "react";
+import { ToastContainer, toast } from 'react-toastify';
+import { cameras } from "@/data/cameras";
+import { useActiveCamera } from "@/contexts/CamContext";
 
 // ICONS
 import { FaMicrophoneAlt, FaMicrophoneAltSlash } from "react-icons/fa";
 import { TbPictureInPictureFilled } from "react-icons/tb";
 import { IoVideocam, IoVideocamOff } from "react-icons/io5";
-import { cameras } from "@/data/cameras";
 
-type Props = {
-    currentVideo: string | null;
-    setCurrentVideo: (video: string | null) => void;
-};
 
-export const VideoArea = ({ currentVideo, setCurrentVideo }: Props) => {
+
+export const VideoArea = () => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
 
     const [recording, setRecording] = useState(false);
     const [videoUrl, setVideoUrl] = useState<string | null>(null);
     const [isFading, setIsFading] = useState(false);
+    const { activeCamera, setActiveCamera } = useActiveCamera();
+    const [found, setFound] = useState<boolean | null>(null)
+    
+    const [isDragging, ] = useState(false);
 
-    // Zoom e Pan
-    const [scale, setScale] = useState(1);
-    const [offset, setOffset] = useState({ x: 0, y: 0 });
-    const [isDragging, setIsDragging] = useState(false);
-    const [startPos, setStartPos] = useState({ x: 0, y: 0 });
-
-    const handleWheel = (e: React.WheelEvent) => {
-        e.preventDefault();
-        const zoomIntensity = 0.1;
-        setScale(prev => Math.max(1, prev + (e.deltaY < 0 ? zoomIntensity : -zoomIntensity)));
-    };
-
-    const handleMouseDown = (e: React.MouseEvent) => {
-        setIsDragging(true);
-        setStartPos({ x: e.clientX - offset.x, y: e.clientY - offset.y });
-    };
-
-    const handleMouseMove = (e: React.MouseEvent) => {
-        if (!isDragging) return;
-        setOffset({ x: e.clientX - startPos.x, y: e.clientY - startPos.y });
-    };
-
-    const handleMouseUp = () => setIsDragging(false);
-
-   
     useEffect(() => {
-        if (!currentVideo) {
+        if (found === true) {
+            toast.success("Câmera encontrada com sucesso!", {
+                position: "top-right",
+                autoClose: 3000,
+            });
+        } else if (found === false) {
+            toast.error("Nenhuma câmera foi encontrada!", {
+                position: "top-right",
+                autoClose: 3000,
+            });
+        }
+
+        setFound(null)
+    }, [found]);
+
+    useEffect(() => {
+        if (!activeCamera) {
+            setVideoUrl(null);
             return;
         }
 
-        if (currentVideo === videoUrl) return;
+        if (activeCamera === videoUrl) return;
 
         setIsFading(true);
         const timeout = setTimeout(() => {
-            setVideoUrl(currentVideo);
+            setVideoUrl(activeCamera);
             setIsFading(false);
         }, 500);
 
         return () => clearTimeout(timeout);
-    }, [currentVideo]);
+    }, [activeCamera]);
 
     // Troca o vídeo
     useEffect(() => {
@@ -95,22 +90,22 @@ export const VideoArea = ({ currentVideo, setCurrentVideo }: Props) => {
         };
     }, [videoUrl]);
 
-    const handleCameraDetected = (url: string | null) => {
-        setCurrentVideo(url);
-    };
 
-    const { isListening } = useSpeechRecognition(recording, handleCameraDetected);
+    const { isListening } = useSpeechRecognition(recording, setFound);
 
     //@ts-expect-error só pra evitar warning no build
     if (isListening === 'asdasd') console.log("teste");
 
-    const handleCam = () => {
+    const handleCam = async () => {
         if (videoRef.current) {
+            if (document.pictureInPictureElement) {
+                await document.exitPictureInPicture();
+            }
             videoRef.current.pause();
             videoRef.current.removeAttribute("src");
             videoRef.current.load();
         }
-        setCurrentVideo(null);
+        setActiveCamera(null);
     };
 
     const handlePictureInPicture = async () => {
@@ -129,18 +124,13 @@ export const VideoArea = ({ currentVideo, setCurrentVideo }: Props) => {
     };
 
     const activeCam = cameras.filter((camera) => (
-        camera.url === currentVideo
+        camera.url === activeCamera
     ));
 
     return (
-        <div className="w-full h-full flex-1 flex flex-col gap-4">
+        <div className="w-2/3 h-full flex flex-col gap-4">
             <div
                 className="overflow-hidden h-full w-full border rounded-lg border-[#07A6FF] relative"
-                onWheel={handleWheel}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
             >
                 <video
                     ref={videoRef}
@@ -148,14 +138,13 @@ export const VideoArea = ({ currentVideo, setCurrentVideo }: Props) => {
                     className={`pointer-events-none select-none object-cover w-full h-full transition-opacity duration-500 ease-in-out
                     ${isFading ? "opacity-0" : "opacity-100"}`}
                     style={{
-                        transform: `scale(${scale}) translate(${offset.x / scale}px, ${offset.y / scale}px)`,
                         transformOrigin: "center center",
                         transition: isDragging ? "none" : "transform 0.2s ease-out",
                     }}
                 />
             </div>
 
-            {activeCam[0]?.address && (
+            {activeCam[0] && (
                 <div className="py-2 bg-white rounded-md text-center text-lg border border-[#07A6FF] font-bold">
                     <p>{activeCam[0].address}</p>
                 </div>
@@ -172,10 +161,10 @@ export const VideoArea = ({ currentVideo, setCurrentVideo }: Props) => {
 
                 <button
                     className="p-4 text-white rounded-full cursor-pointer text-xl"
-                    style={{ backgroundColor: currentVideo ? "gray" : "red" }}
+                    style={{ backgroundColor: activeCamera ? "gray" : "red" }}
                     onClick={handleCam}
                 >
-                    {currentVideo ? <IoVideocamOff /> : <IoVideocam />}
+                    {activeCamera ? <IoVideocamOff /> : <IoVideocam />}
                 </button>
 
                 <button
@@ -185,6 +174,8 @@ export const VideoArea = ({ currentVideo, setCurrentVideo }: Props) => {
                     <TbPictureInPictureFilled />
                 </button>
             </div>
+
+            <ToastContainer />
         </div>
     );
 };

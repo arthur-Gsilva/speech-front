@@ -1,46 +1,54 @@
 import { Camera } from "@/types/Camera";
 import { useDroppable } from "@dnd-kit/core";
 import { CameraItem } from "./CameraItem";
+import { HeaderZone } from "./ZoneHeader";
+import { useActiveCamera } from "@/contexts/CamContext";
+import { useEffect, useState } from "react";
 
 type Props = {
     selectedCams: Camera[],
-    setCurrentVideo: (video: string) => void,
-    currentVideo: string | null,
     setSelectedCams: (cam: Camera[]) => void,
     setCams: (cam: Camera[]) => void,
     cams: Camera[]
 }
 
-export const DropZone = ({ selectedCams, setCurrentVideo, currentVideo, setSelectedCams, setCams, cams }: Props) => {
+export const DropZone = ({ selectedCams, setSelectedCams, setCams, cams }: Props) => {
     const { setNodeRef } = useDroppable({ id: "dropzone" });
+
+    const { activeCamera, setActiveCamera } = useActiveCamera();
+    const [viewedCameras, setViewedCameras] = useState<string[]>([]);
+
+    useEffect(() => {
+        if (activeCamera && !viewedCameras.includes(activeCamera)) {
+            setViewedCameras((prev) => [...prev, activeCamera]);
+        }
+    }, [activeCamera]);
 
     const handleClick = () => {
         setCams(cams.concat(selectedCams))
         setSelectedCams([])
+        setViewedCameras([]);
     }
 
     return (
-        <div ref={setNodeRef} className="bg-white border border-[#07A6FF] p-4 rounded-lg min-h-[500px] mt-12">
-            <div className="flex justify-between items-center border-b border-b-gray-200 pb-3 mb-2">
-                <h5 className="text-[#2D3748] text-xl font-bold">Câmeras da Transmissão</h5>
-                <p className="text-[#6C757D] pr-8">Status</p>
-            </div>
+        <div ref={setNodeRef} className="zone mt-12">
+            <HeaderZone title="Câmeras da Transmissão" label="Status"/>
 
             {selectedCams.map((item) => (
-            // <div 
-            //     className="bg-white p-2 mt-2 rounded shadow cursor-pointer"
-            //     key={item.id} 
-            //     style={{ backgroundColor: item.url ===  currentVideo && currentVideo ? 'green' : '#fff'}}
-            //     onClick={() => setCurrentVideo(item.url)}>
-            //     {item.keyword}
-            // </div>
-                <div onClick={() => setCurrentVideo(item.url)} key={item.id} className="mb-2">
+                <div 
+                    onClick={() => setActiveCamera(item.url)} 
+                    key={item.id} 
+                    className={`
+                        mb-2 transition-opacity duration-300
+                        ${viewedCameras.includes(item.url) && item.url !== activeCamera ? 'opacity-40' : 'opacity-100'}
+                      `}
+                >
                     <CameraItem  data={item} Drag={true}>
-                        <button className={`${item.url === currentVideo ? 'bg-[#38B000]' : 'bg-[#CED4DA]'} px-3 py-1 rounded-md text-white`}>
-                            {item.url !== currentVideo &&
+                        <button className={`${item.url === activeCamera ? 'bg-[#38B000]' : 'bg-[#CED4DA]'} px-3 py-1 rounded-md text-white`}>
+                            {item.url !== activeCamera &&
                                 <p>Offline</p>
                             }
-                            {item.url === currentVideo &&
+                            {item.url === activeCamera &&
                                 <p>Online</p>
                             }
                         </button>

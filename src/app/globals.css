@@ -5,6 +5,12 @@
   --foreground: #171717;
 }
 
+@layer base{
+  .zone {
+    @apply bg-white border border-[#07A6FF] overflow-y-auto p-4 min-h-[500px] max-h-[70vh] rounded-lg flex-1;
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
