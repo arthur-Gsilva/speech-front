@@ -46,7 +46,7 @@ export const CamBoard = ({ cams }: Props) => {
             {filteredCams.map((item) => (
               <div key={item.id} onClick={() => setActiveCamera(item.url)}>
                 <CameraItem data={item} setPlay={setActiveCamera}>
-                <div className="bg-[#07A6FF] px-8 font-bold py-2 rounded-lg text-white">
+                <div className="bg-[#07A6FF] px-4 lg:px-8 font-bold py-2 rounded-lg text-white">
                   {formattIdCam(item.id)}
                 </div>
                 </CameraItem>

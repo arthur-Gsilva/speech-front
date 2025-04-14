@@ -19,7 +19,6 @@ export const VideoArea = () => {
 
     const [recording, setRecording] = useState(false);
     const [videoUrl, setVideoUrl] = useState<string | null>(null);
-    const [isFading, setIsFading] = useState(false);
     const { activeCamera, setActiveCamera } = useActiveCamera();
     const [found, setFound] = useState<boolean | null>(null)
     
@@ -46,16 +45,9 @@ export const VideoArea = () => {
             setVideoUrl(null);
             return;
         }
-
         if (activeCamera === videoUrl) return;
 
-        setIsFading(true);
-        const timeout = setTimeout(() => {
-            setVideoUrl(activeCamera);
-            setIsFading(false);
-        }, 500);
-
-        return () => clearTimeout(timeout);
+        setVideoUrl(activeCamera);
     }, [activeCamera]);
 
     // Troca o vídeo
@@ -135,8 +127,7 @@ export const VideoArea = () => {
                 <video
                     ref={videoRef}
                     autoPlay
-                    className={`pointer-events-none select-none object-cover w-full h-full transition-opacity duration-500 ease-in-out
-                    ${isFading ? "opacity-0" : "opacity-100"}`}
+                    className={`pointer-events-none select-none object-cover w-full h-full transition-opacity duration-500 ease-in-out`}
                     style={{
                         transformOrigin: "center center",
                         transition: isDragging ? "none" : "transform 0.2s ease-out",

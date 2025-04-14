@@ -37,7 +37,7 @@ export const CameraItem = ({ data, children, Drag }: Props) => {
                     <img src="./globo-icon.png" alt="icon da globo" />
                 </div>
                 <div>
-                    <h3 className="text-2xl text-[#2D3748] font-bold">Câmera {formattIdCam(data.id)}</h3>
+                    <h3 className="text-lg lg:text-2xl text-[#2D3748] font-bold">Câmera {formattIdCam(data.id)}</h3>
                     <h5 className=" text-[#718096]">{data.keyword}</h5>
                 </div>
             </div>

@@ -48,7 +48,7 @@ const Page = () => {
     };
 
     return (
-        <main className="flex items-center gap-6 w-screen mt-3 px-20">
+        <main className="flex flex-col lg:flex-row items-center gap-6 w-screen mt-3 px-20">
             <VideoArea />
             
             <DndContext id="draggable-table-01" collisionDetection={closestCorners} onDragEnd={handleDragEnd} onDragStart={handleDragStart}>

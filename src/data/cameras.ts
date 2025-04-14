@@ -98,6 +98,12 @@ export const cameras: Camera[] = [
         address: 'Bairro de Kennedy',
         url: 'http://localhost:8888/cam9_transcoded_output/index.m3u8'
     },
+    {
+        id: 11,
+        keyword: 'Caxangá',
+        address: 'Rua dos escravos de jó',
+        url: 'https://34.104.32.249.nip.io/SP055-KM055/stream.m3u8'
+    },
     
 
 ]
