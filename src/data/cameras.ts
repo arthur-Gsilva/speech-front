@@ -5,14 +5,16 @@ export const cameras: Camera[] = [
         id: 1,
         keyword: 'Boa viagem',
         address: 'rua da auraro 34380',
-        url: 'http://localhost:8888/cam1_transcoded_output/index.m3u8'
+        url: 'http://localhost:8888/cam1_transcoded_output/index.m3u8',
+        inDropzone: false
 
     },
     {
         id: 2,
         keyword: 'Vitória',
         address: 'rua da vitoria 34380',
-        url: 'https://34.104.32.249.nip.io/SP324-KM081/stream.m3u8'
+        url: 'https://34.104.32.249.nip.io/SP324-KM081/stream.m3u8',
+        inDropzone: true
     },
     {
         id: 3,

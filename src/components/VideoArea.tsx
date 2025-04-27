@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import useSpeechRecognition from "@/libs/speech/useVoiceRecogninition";
 import Hls from "hls.js";
@@ -6,13 +6,12 @@ import { useEffect, useRef, useState } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import { cameras } from "@/data/cameras";
 import { useActiveCamera } from "@/contexts/CamContext";
+import socket from "@/libs/socket"; // IMPORTA O SOCKET
 
 // ICONS
 import { FaMicrophoneAlt, FaMicrophoneAltSlash } from "react-icons/fa";
 import { TbPictureInPictureFilled } from "react-icons/tb";
 import { IoVideocam, IoVideocamOff } from "react-icons/io5";
-
-
 
 export const VideoArea = () => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -20,8 +19,7 @@ export const VideoArea = () => {
     const [recording, setRecording] = useState(false);
     const [videoUrl, setVideoUrl] = useState<string | null>(null);
     const { activeCamera, setActiveCamera } = useActiveCamera();
-    const [found, setFound] = useState<boolean | null>(null)
-    
+    const [found, setFound] = useState<boolean | null>(null);
     const [isDragging, ] = useState(false);
 
     useEffect(() => {
@@ -36,8 +34,7 @@ export const VideoArea = () => {
                 autoClose: 3000,
             });
         }
-
-        setFound(null)
+        setFound(null);
     }, [found]);
 
     useEffect(() => {
@@ -48,7 +45,19 @@ export const VideoArea = () => {
         if (activeCamera === videoUrl) return;
 
         setVideoUrl(activeCamera);
+        socket.emit('change-camera', { url: activeCamera }); // MANDA PRO SOCKET
     }, [activeCamera]);
+
+    // RECEBE ATUALIZAÇÃO DO SOCKET
+    useEffect(() => {
+        socket.on('camera-updated', ({  url }) => {
+            setActiveCamera(url);
+        });
+
+        return () => {
+            socket.off('camera-updated');
+        };
+    }, []);
 
     // Troca o vídeo
     useEffect(() => {
@@ -82,7 +91,6 @@ export const VideoArea = () => {
         };
     }, [videoUrl]);
 
-
     const { isListening } = useSpeechRecognition(recording, setFound);
 
     //@ts-expect-error só pra evitar warning no build
@@ -98,6 +106,7 @@ export const VideoArea = () => {
             videoRef.current.load();
         }
         setActiveCamera(null);
+        socket.emit('change-camera', { url: null }); // MANDA PRO SOCKET
     };
 
     const handlePictureInPicture = async () => {
@@ -121,9 +130,7 @@ export const VideoArea = () => {
 
     return (
         <div className="w-2/3 h-full flex flex-col gap-4">
-            <div
-                className="overflow-hidden h-full w-full border rounded-lg border-[#07A6FF] relative"
-            >
+            <div className="overflow-hidden h-full w-full border rounded-lg border-[#07A6FF] relative">
                 <video
                     ref={videoRef}
                     autoPlay
