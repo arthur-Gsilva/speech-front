@@ -12,8 +12,6 @@ import { FaMicrophoneAlt, FaMicrophoneAltSlash } from "react-icons/fa";
 import { TbPictureInPictureFilled } from "react-icons/tb";
 import { IoVideocam, IoVideocamOff } from "react-icons/io5";
 
-
-
 export const VideoArea = () => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -82,6 +80,28 @@ export const VideoArea = () => {
         };
     }, [videoUrl]);
 
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+          if (e.key.toLowerCase() === "q") {
+            setRecording(true);
+          }
+        };
+    
+        const handleKeyUp = (e: KeyboardEvent) => {
+          if (e.key.toLowerCase() === "q") {
+            setRecording(false);
+          }
+        };
+    
+        window.addEventListener("keydown", handleKeyDown);
+        window.addEventListener("keyup", handleKeyUp);
+    
+        return () => {
+          window.removeEventListener("keydown", handleKeyDown);
+          window.removeEventListener("keyup", handleKeyUp);
+        };
+      }, []);
+
 
     const { isListening } = useSpeechRecognition(recording, setFound);
 
@@ -144,18 +164,18 @@ export const VideoArea = () => {
             <div className="flex gap-5 justify-center">
                 <button
                     className="p-4 text-white rounded-full cursor-pointer text-xl"
-                    style={{ backgroundColor: recording ? "gray" : "#38B000" }}
+                    style={{ backgroundColor: !recording ? "gray" : "#38B000" }}
                     onClick={() => setRecording(!recording)}
                 >
-                    {recording ? <FaMicrophoneAltSlash /> : <FaMicrophoneAlt />}
+                    {recording ?  <FaMicrophoneAlt /> : <FaMicrophoneAltSlash />}
                 </button>
 
                 <button
                     className="p-4 text-white rounded-full cursor-pointer text-xl"
-                    style={{ backgroundColor: activeCamera ? "gray" : "red" }}
+                    style={{ backgroundColor: !activeCamera ? "gray" : "red" }}
                     onClick={handleCam}
                 >
-                    {activeCamera ? <IoVideocamOff /> : <IoVideocam />}
+                    {activeCamera ? <IoVideocam /> :  <IoVideocamOff />}
                 </button>
 
                 <button
@@ -165,6 +185,8 @@ export const VideoArea = () => {
                     <TbPictureInPictureFilled />
                 </button>
             </div>
+
+            <p className="text-center">Ou pressione a letra <strong>Q</strong></p>
 
             <ToastContainer />
         </div>
