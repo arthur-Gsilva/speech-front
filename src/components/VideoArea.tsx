@@ -12,6 +12,7 @@ import socket from "@/libs/socket"; // IMPORTA O SOCKET
 import { FaMicrophoneAlt, FaMicrophoneAltSlash } from "react-icons/fa";
 import { TbPictureInPictureFilled } from "react-icons/tb";
 import { IoVideocam, IoVideocamOff } from "react-icons/io5";
+import { garantirHttps } from "@/services/useFormatter";
 
 export const VideoArea = () => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -65,6 +66,7 @@ export const VideoArea = () => {
 
         if (videoUrl && videoRef.current) {
             const video = videoRef.current;
+            console.log("TENTANDO CARREGAR URL:", videoUrl);
 
             if (Hls.isSupported()) {
                 hls = new Hls();
