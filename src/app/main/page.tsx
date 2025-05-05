@@ -27,7 +27,7 @@ const Page = () => {
     }
   }, [user]);
 
-  if (!user) return null;
+  
 
   useEffect(() => {
     const handleInit = (data: { cams: Camera[]; selectedCams: Camera[] }) => {
@@ -56,6 +56,8 @@ const Page = () => {
       socket.off("update-cameras", handleUpdate);
     };
   }, []);
+
+  if (!user) return null;
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;

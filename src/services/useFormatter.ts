@@ -16,6 +16,7 @@ export const garantirHttps = (url: string): string => {
       return url;
     } catch (err) {
       console.warn("URL inválida:", url);
+      console.log(err)
       return url;
     }
   }

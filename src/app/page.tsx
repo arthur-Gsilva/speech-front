@@ -18,7 +18,7 @@ const Page = () => {
             {["Arthur", "ADMIN", "Lucas"].map((u) => (
                 <button
                     key={u}
-                    onClick={() => handleSelect(u as any)}
+                    onClick={() => handleSelect(u as "Arthur" | "Lucas" | "ADMIN")}
                     className="cursor-pointer bg-blue-300 p-4 rounded-full"
                 >
                     {u}
