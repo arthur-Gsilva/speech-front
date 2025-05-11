@@ -109,15 +109,15 @@ export const VideoArea = () => {
     if (isListening === 'asdasd') console.log("teste");
 
     const handleCam = async () => {
-        if (videoRef.current) {
-            if (document.pictureInPictureElement) {
-                await document.exitPictureInPicture();
-            }
-            videoRef.current.pause();
-            videoRef.current.removeAttribute("src");
-            videoRef.current.load();
-        }
-        setActiveCamera(null);
+        // if (videoRef.current) {
+        //     if (document.pictureInPictureElement) {
+        //         await document.exitPictureInPicture();
+        //     }
+        //     videoRef.current.pause();
+        //     videoRef.current.removeAttribute("src");
+        //     videoRef.current.load();
+        // }
+        setActiveCamera("/main.m3u8");
     };
 
     const handlePictureInPicture = async () => {

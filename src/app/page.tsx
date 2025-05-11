@@ -19,8 +19,6 @@ const Page = () => {
 
     const { setActiveCamera } = useActiveCamera();
 
-
-  // Função para lidar com o fim do arrasto
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
         setActiveDragCamera(undefined)
