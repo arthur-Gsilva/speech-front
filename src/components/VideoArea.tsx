@@ -130,7 +130,7 @@ export const VideoArea = () => {
         //     videoRef.current.load();
         // }
         setActiveCamera("/main.m3u8");
-        socket.emit('change-camera', { url: '"/main.m3u8"' });
+        socket.emit('change-camera', { url: "/main.m3u8" });
     };
 
     const handlePictureInPicture = async () => {

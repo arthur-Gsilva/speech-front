@@ -3,7 +3,7 @@
 #EXT-X-TARGETDURATION:5
 #EXT-X-MEDIA-SEQUENCE:0
 #EXTINF:5.000000,
-main0.ts
+main0.tsmedia
 #EXTINF:5.000000,
-main1.ts
+main1.tsmedia
 #EXT-X-ENDLIST
