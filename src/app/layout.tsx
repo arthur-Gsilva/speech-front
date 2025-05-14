@@ -6,6 +6,7 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { CameraProvider } from "@/contexts/CamContext";
 import { UserProvider } from "@/contexts/UserContext";
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +36,7 @@ export default function RootLayout({
           <CameraProvider>
             {children}
           </CameraProvider>
+          <SpeedInsights />
         </UserProvider>
         
       </body>
