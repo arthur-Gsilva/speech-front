@@ -1,8 +1,15 @@
 import { FaUser } from "react-icons/fa";
-import { FaBell } from "react-icons/fa";
+import { IoExit } from "react-icons/io5";
 import { FaGear } from "react-icons/fa6";
 
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
+
+
 export const Header = () => {
+
+    const router = useRouter()
+
     return(
         <header className="flex w-full justify-between py-3 px-20">
             <div>
@@ -19,8 +26,11 @@ export const Header = () => {
                     <FaGear />
                 </div>
 
-                <div>
-                    <FaBell />
+                <div className="cursor-pointer" onClick={() => {
+                    Cookies.remove("user_type");
+                    router.replace("/");
+                }}>
+                    <IoExit />
                 </div>
             </div>
         </header>

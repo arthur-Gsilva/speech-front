@@ -11,7 +11,7 @@ type CameraContextType = {
 const CameraContext = createContext<CameraContextType | undefined>(undefined);
 
 export const CameraProvider = ({ children }: { children: ReactNode }) => {
-    const [activeCamera, setActiveCamera] = useState<string | null>("/main.m3u8");
+    const [activeCamera, setActiveCamera] = useState<string | null>("./main.m3u8");
 
     return (
         <CameraContext.Provider value={{ activeCamera, setActiveCamera }}>

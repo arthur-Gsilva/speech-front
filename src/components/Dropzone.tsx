@@ -8,14 +8,12 @@ import socket from "@/libs/socket";
 
 type Props = {
     selectedCams: Camera[],
-    setSelectedCams: React.Dispatch<React.SetStateAction<Camera[]>>,
     setCams: (cam: Camera[]) => void,
     cams: Camera[],
 }
 
-export const DropZone = ({ selectedCams, setSelectedCams, setCams, cams }: Props) => {
+export const DropZone = ({ selectedCams, setCams, cams }: Props) => {
     const { setNodeRef } = useDroppable({ id: "dropzone" });
-
     const { activeCamera, setActiveCamera } = useActiveCamera();
     const [viewedCameras, setViewedCameras] = useState<string[]>([]);
 
@@ -26,27 +24,28 @@ export const DropZone = ({ selectedCams, setSelectedCams, setCams, cams }: Props
     }, [activeCamera]);
 
     const handleClick = () => {
-        const updatedCams = cams.concat(selectedCams); // Junta as câmeras de volta
-        const updatedSelectedCams: Camera[] = []; // Limpa a seleção
-      
-        // Atualiza localmente (pra ficar rápido no clique)
+        // Limpa todas as câmeras selecionadas
+        const updatedCams = cams.concat(selectedCams);
         setCams(updatedCams);
-        setSelectedCams(updatedSelectedCams);
-        setViewedCameras([]);
-      
-        // Emite para o servidor (pra todo mundo sincronizar)
-        socket.emit("move-camera", { cams: updatedCams, selectedCams: updatedSelectedCams });
-      };
+
+        // Emite o estado atualizado para o servidor
+        socket.emit("move-camera", { cams: updatedCams, selectedCams: [] });
+    };
 
     const removeCam = (id: number) => {
-        setCams(cams.concat(selectedCams.filter(cam => cam.id == id)))
-        setSelectedCams((prev: Camera[]) => prev.filter(cam => cam.id !== id));
+        // Remove a câmera da lista selecionada e adiciona na lista principal
+        const updatedSelectedCams = selectedCams.filter((cam) => cam.id !== id);
+        const updatedCams = [...cams, ...selectedCams.filter((cam) => cam.id === id)];
+
+        setCams(updatedCams);
+
+        // Emite o estado atualizado para o servidor
+        socket.emit("move-camera", { cams: updatedCams, selectedCams: updatedSelectedCams });
     };
-      
 
     return (
         <div ref={setNodeRef} className="zone mt-12">
-            <HeaderZone title="Câmeras da Transmissão" label="Status"/>
+            <HeaderZone title="Câmeras da Transmissão" label="Status" />
 
             {selectedCams.map((item) => (
                 <div 
@@ -58,7 +57,7 @@ export const DropZone = ({ selectedCams, setSelectedCams, setCams, cams }: Props
                 >
                     <button
                         onClick={(e) => {
-                            e.stopPropagation(); // impede que clique no X selecione a câmera
+                            e.stopPropagation();
                             removeCam(item.id);
                         }}
                         className="top-[-100%] group-hover:top-0 transition-all duration-300 absolute right-2 bg-red-600 h-8 w-8 rounded-full text-white font-bold text-xl z-10 cursor-pointer hover:bg-red-800"
@@ -66,25 +65,26 @@ export const DropZone = ({ selectedCams, setSelectedCams, setCams, cams }: Props
                         ×
                     </button>
 
-                    
                     <div onClick={() => setActiveCamera(item.url)}>
                         <CameraItem data={item} Drag={true}>
                             <button className={`${item.url === activeCamera ? 'bg-[#38B000]' : 'bg-[#CED4DA]'} px-3 py-1 rounded-md text-white`}>
-                            {item.url === activeCamera ? <p>Online</p> : <p>Offline</p>}
+                                {item.url === activeCamera ? <p>Online</p> : <p>Offline</p>}
                             </button>
                         </CameraItem>
                     </div>
                 </div>
             ))}
 
-            {selectedCams.length >= 1 &&
+            {selectedCams.length >= 1 && (
                 <div className="w-full flex justify-center items-center">
                     <button 
                         className="bg-white p-2 rounded-lg text-black cursor-pointer mt-4"
                         onClick={handleClick}
-                    >Limpar</button>
+                    >
+                        Limpar
+                    </button>
                 </div>
-            }
+            )}
         </div>
     );
 };

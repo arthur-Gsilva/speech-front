@@ -1,14 +1,22 @@
 "use client";
 
-import { useUser } from "@/contexts/UserContext";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+import { useEffect } from "react";
+import { User } from "@/types/User";
 
 const Page = () => {
-    const { setUser } = useUser();
     const router = useRouter();
 
-    const handleSelect = (user: "Arthur" | "Lucas" | "ADMIN") => {
-        setUser(user);
+    useEffect(() => {
+        const user = Cookies.get("user_type");
+        if (user) {
+            router.push("/main");
+        }
+    }, []);
+
+    const handleSelect = (user: User) => {
+        Cookies.set("user_type", user, { expires: 7 }); // Cookie válido por 7 dias
         router.push("/main");
     };
 
@@ -18,7 +26,7 @@ const Page = () => {
             {["Arthur", "ADMIN", "Lucas"].map((u) => (
                 <button
                     key={u}
-                    onClick={() => handleSelect(u as "Arthur" | "Lucas" | "ADMIN")}
+                    onClick={() => handleSelect(u as User)}
                     className="cursor-pointer bg-blue-300 p-4 rounded-full"
                 >
                     {u}
