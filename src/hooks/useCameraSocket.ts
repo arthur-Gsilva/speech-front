@@ -1,4 +1,3 @@
-// app/main/hooks/useCamerasSocket.ts
 import { useEffect, useState } from "react";
 import socket from "@/libs/socket";
 import { Camera } from "@/types/Camera";

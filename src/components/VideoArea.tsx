@@ -7,7 +7,6 @@ import { ToastContainer, toast } from 'react-toastify';
 import { cameras } from "@/data/cameras";
 import { useActiveCamera } from "@/contexts/CamContext";
 import socket from "@/libs/socket"; // IMPORTA O SOCKET
-
 // ICONS
 import { FaMicrophoneAlt, FaMicrophoneAltSlash } from "react-icons/fa";
 import { TbPictureInPictureFilled } from "react-icons/tb";
@@ -121,16 +120,23 @@ export const VideoArea = () => {
     if (isListening === 'asdasd') console.log("teste");
 
     const handleCam = async () => {
-        // if (videoRef.current) {
-        //     if (document.pictureInPictureElement) {
-        //         await document.exitPictureInPicture();
-        //     }
-        //     videoRef.current.pause();
-        //     videoRef.current.removeAttribute("src");
-        //     videoRef.current.load();
-        // }
         setActiveCamera("/main.m3u8");
         socket.emit('change-camera', { url: "/main.m3u8" });
+    };
+
+    const handleFullscreen = async () => {
+        const video = videoRef.current;
+        if (!video) return;
+
+        try {
+            if (!document.fullscreenElement) {
+                await video.requestFullscreen(); // Tenta colocar o vídeo em tela cheia
+            } else {
+                document.exitFullscreen(); // Sai da tela cheia se já estiver
+            }
+        } catch (error) {
+            console.error("Erro ao alternar tela cheia:", error);
+        }
     };
 
     const handlePictureInPicture = async () => {
@@ -163,6 +169,7 @@ export const VideoArea = () => {
                         transformOrigin: "center center",
                         transition: isDragging ? "none" : "transform 0.2s ease-out",
                     }}
+                    controls={videoUrl ? undefined : false}
                 />
             </div>
 
@@ -194,6 +201,13 @@ export const VideoArea = () => {
                     onClick={handlePictureInPicture}
                 >
                     <TbPictureInPictureFilled />
+                </button>
+                <button
+                    className="p-4 bg-white rounded-full cursor-pointer text-xl text-[#718096] border border-[#07A6FF]"
+                    onClick={handleFullscreen} // Chama a função de tela cheia
+                >
+                    {/* Um ícone de tela cheia pode ser adicionado aqui */}
+                    &#x1F5D0; {/* Este é um exemplo de um ícone de tela cheia */}
                 </button>
             </div>
 
