@@ -11,6 +11,7 @@ import { useActiveCamera } from "@/contexts/CamContext";
 import { useCamerasSocket } from "@/hooks/useCameraSocket";
 import { useUserAuth } from "@/hooks/useUserAuth";
 import { Camera } from "@/types/Camera";
+import { Header } from "@/components/Header";
 
 const Page = () => {
     const { cams, selectedCams, updateCameras } = useCamerasSocket();
@@ -63,26 +64,30 @@ const Page = () => {
     };
 
     return (
-        <main className="flex flex-col lg:flex-row items-center gap-6 w-screen mt-3 px-20">
-        {user !== "Lucas" && <VideoArea />}
+        <>
+            <Header />
 
-            <DndContext collisionDetection={closestCorners} onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
-                <div className="grid grid-cols-2 gap-4 mb-12 w-full">
-                    <DropZone selectedCams={selectedCams} setCams={setCams} cams={cams} />
-                    {user !== "Arthur" && <CamBoard cams={cams} />}
-                </div>
+            <main className="flex flex-col lg:flex-row items-center gap-6 w-screen mt-3 px-20">
+                {user !== "Lucas" && <VideoArea />}
 
-                <DragOverlay>
-                {activeCamera && (
-                    <CameraItem data={activeCamera} setPlay={setActiveCamera}>
-                        <div className="bg-[#07A6FF] px-8 font-bold py-2 rounded-lg text-white">
-                            {formattIdCam(activeCamera.id)}
-                        </div>
-                    </CameraItem>
-                )}
-                </DragOverlay>
-            </DndContext>
-        </main>
+                <DndContext collisionDetection={closestCorners} onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
+                    <div className="grid grid-cols-2 gap-4 mb-12 w-full">
+                        <DropZone selectedCams={selectedCams} setCams={setCams} cams={cams} />
+                        {user !== "Arthur" && <CamBoard cams={cams} />}
+                    </div>
+
+                    <DragOverlay>
+                        {activeCamera && (
+                            <CameraItem data={activeCamera} setPlay={setActiveCamera}>
+                                <div className="bg-[#07A6FF] px-8 font-bold py-2 rounded-lg text-white">
+                                    {formattIdCam(activeCamera.id)}
+                                </div>
+                            </CameraItem>
+                        )}
+                    </DragOverlay>
+                </DndContext>
+            </main>
+        </>
     );
 };
 

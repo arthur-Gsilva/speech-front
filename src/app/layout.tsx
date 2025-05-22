@@ -30,7 +30,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
 
-          <Header />
+          {/* <Header /> */}
           <CameraProvider>
             {children}
           </CameraProvider>

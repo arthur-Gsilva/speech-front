@@ -6,11 +6,12 @@ import { useEffect, useRef, useState } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import { cameras } from "@/data/cameras";
 import { useActiveCamera } from "@/contexts/CamContext";
-import socket from "@/libs/socket"; // IMPORTA O SOCKET
+import socket from "@/libs/socket"; 
 // ICONS
 import { FaMicrophoneAlt, FaMicrophoneAltSlash } from "react-icons/fa";
-import { TbPictureInPictureFilled } from "react-icons/tb";
+import { FaLock, FaLockOpen } from 'react-icons/fa';
 import { IoVideocam, IoVideocamOff } from "react-icons/io5";
+import { LuFullscreen } from "react-icons/lu";
 
 export const VideoArea = () => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -20,6 +21,12 @@ export const VideoArea = () => {
     const { activeCamera, setActiveCamera } = useActiveCamera();
     const [found, setFound] = useState<boolean | null>(null);
     const [isDragging, ] = useState(false);
+
+    const [locked, setLocked] = useState(true);
+
+    const handleToggle = () => {
+        setLocked(!locked);
+    };
 
     useEffect(() => {
         if (found === true) {
@@ -44,7 +51,10 @@ export const VideoArea = () => {
         if (activeCamera === videoUrl) return;
 
         setVideoUrl(activeCamera);
-        socket.emit('change-camera', { url: activeCamera }); // MANDA PRO SOCKET
+        const bc = new BroadcastChannel("camera-sync");
+        bc.postMessage(activeCamera);
+        bc.close();
+        socket.emit('change-camera', { url: activeCamera }); 
     }, [activeCamera]);
 
     // RECEBE ATUALIZAÇÃO DO SOCKET
@@ -125,34 +135,29 @@ export const VideoArea = () => {
     };
 
     const handleFullscreen = async () => {
-        const video = videoRef.current;
-        if (!video) return;
-
-        try {
-            if (!document.fullscreenElement) {
-                await video.requestFullscreen(); // Tenta colocar o vídeo em tela cheia
-            } else {
-                document.exitFullscreen(); // Sai da tela cheia se já estiver
-            }
-        } catch (error) {
-            console.error("Erro ao alternar tela cheia:", error);
+        
+        if(locked){
+            toast.error("Você não pode abrir outra guia com o sistema bloqueado!", {
+                position: "top-right",
+                autoClose: 3000,
+            });
+        } else{
+            if (!videoUrl) return;
+            const encoded = encodeURIComponent(videoUrl);
+            window.open(`/player?cam=${encoded}`, '_blank');
         }
     };
 
-    const handlePictureInPicture = async () => {
-        const video = videoRef.current;
-        if (!video) return;
-
-        try {
-            if (document.pictureInPictureElement) {
-                await document.exitPictureInPicture();
-            } else {
-                await video.requestPictureInPicture();
-            }
-        } catch (error) {
-            console.error("Erro ao alternar PiP:", error);
+    const handleRecording = () => {
+        if(locked){
+            toast.error("Você não pode ativar a voz com o sistema bloqueado!", {
+                position: "top-right",
+                autoClose: 3000,
+            });
+        } else{
+            setRecording(!recording)
         }
-    };
+    }
 
     const activeCam = cameras.filter((camera) => (
         camera.url === activeCamera
@@ -183,7 +188,7 @@ export const VideoArea = () => {
                 <button
                     className="p-4 text-white rounded-full cursor-pointer text-xl"
                     style={{ backgroundColor: !recording ? "gray" : "#38B000" }}
-                    onClick={() => setRecording(!recording)}
+                    onClick={handleRecording}
                 >
                     {recording ?  <FaMicrophoneAlt /> : <FaMicrophoneAltSlash />}
                 </button>
@@ -198,16 +203,15 @@ export const VideoArea = () => {
 
                 <button
                     className="p-4 bg-white rounded-full cursor-pointer text-xl text-[#718096] border border-[#07A6FF]"
-                    onClick={handlePictureInPicture}
+                    onClick={handleFullscreen} 
                 >
-                    <TbPictureInPictureFilled />
+                    <LuFullscreen />
                 </button>
-                <button
-                    className="p-4 bg-white rounded-full cursor-pointer text-xl text-[#718096] border border-[#07A6FF]"
-                    onClick={handleFullscreen} // Chama a função de tela cheia
-                >
-                    {/* Um ícone de tela cheia pode ser adicionado aqui */}
-                    &#x1F5D0; {/* Este é um exemplo de um ícone de tela cheia */}
+
+                <button className={`p-4 bg-white rounded-full cursor-pointer text-xl text-[#718096] border border-[#07A6FF]`} onClick={handleToggle}>
+                    <div className="lock-icon">
+                        {locked ? <FaLock /> : <FaLockOpen />}
+                    </div>
                 </button>
             </div>
 
