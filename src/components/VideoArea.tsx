@@ -9,9 +9,10 @@ import { useActiveCamera } from "@/contexts/CamContext";
 import socket from "@/libs/socket"; 
 // ICONS
 import { FaMicrophoneAlt, FaMicrophoneAltSlash } from "react-icons/fa";
-import { FaLock, FaLockOpen } from 'react-icons/fa';
 import { IoVideocam, IoVideocamOff } from "react-icons/io5";
 import { LuFullscreen } from "react-icons/lu";
+import { LockButton } from "./LockButton";
+import { useLock } from "@/contexts/LockContext";
 
 export const VideoArea = () => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -22,11 +23,7 @@ export const VideoArea = () => {
     const [found, setFound] = useState<boolean | null>(null);
     const [isDragging, ] = useState(false);
 
-    const [locked, setLocked] = useState(true);
-
-    const handleToggle = () => {
-        setLocked(!locked);
-    };
+    const { locked } = useLock();
 
     useEffect(() => {
         if (found === true) {
@@ -74,7 +71,6 @@ export const VideoArea = () => {
 
         if (videoUrl && videoRef.current) {
             const video = videoRef.current;
-            console.log("TENTANDO CARREGAR URL:", videoUrl);
 
             if (Hls.isSupported()) {
                 hls = new Hls();
@@ -101,15 +97,26 @@ export const VideoArea = () => {
         };
     }, [videoUrl]);
 
+
+    //ATIVAR O MIC APERTANDO Q
     useEffect(() => {
+        
         const handleKeyDown = (e: KeyboardEvent) => {
           if (e.key.toLowerCase() === "q") {
+            if(locked){
+                toast.error("Você não pode abrir outra guia com o sistema bloqueado!", {
+                    position: "top-right",
+                    autoClose: 1500,
+                });
+                return;
+            }
             setRecording(true);
           }
         };
     
         const handleKeyUp = (e: KeyboardEvent) => {
           if (e.key.toLowerCase() === "q") {
+            
             setRecording(false);
           }
         };
@@ -121,7 +128,7 @@ export const VideoArea = () => {
           window.removeEventListener("keydown", handleKeyDown);
           window.removeEventListener("keyup", handleKeyUp);
         };
-      }, []);
+    }, []);
 
 
     const { isListening } = useSpeechRecognition(recording, setFound);
@@ -207,16 +214,14 @@ export const VideoArea = () => {
                 >
                     <LuFullscreen />
                 </button>
-
-                <button className={`p-4 bg-white rounded-full cursor-pointer text-xl text-[#718096] border border-[#07A6FF]`} onClick={handleToggle}>
-                    <div className="lock-icon">
-                        {locked ? <FaLock /> : <FaLockOpen />}
-                    </div>
-                </button>
             </div>
 
-            <p className="text-center">Ou pressione a letra <strong>Q</strong></p>
+            <LockButton />
 
+            {!locked &&
+                <p className="text-center">Ou pressione a letra <strong>Q</strong></p>
+            }
+        
             <ToastContainer />
         </div>
     );

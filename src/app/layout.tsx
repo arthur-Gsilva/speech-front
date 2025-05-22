@@ -1,11 +1,16 @@
-'use client'
-
-
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/Header";
 import { CameraProvider } from "@/contexts/CamContext";
-import { SpeedInsights } from '@vercel/speed-insights/next';
+import { LockProvider } from "@/contexts/LockContext";
+import type { Metadata } from 'next'
+ 
+export const metadata: Metadata = {
+  title: 'Globo Câmeras',
+  icons: {
+    icon: '/globo-icon.png',
+  },
+}
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,9 +37,10 @@ export default function RootLayout({
 
           {/* <Header /> */}
           <CameraProvider>
-            {children}
+            <LockProvider>
+              {children}
+            </LockProvider>
           </CameraProvider>
-          <SpeedInsights />
         
       </body>
     </html>

@@ -5,6 +5,8 @@ import { HeaderZone } from "./ZoneHeader";
 import { useActiveCamera } from "@/contexts/CamContext";
 import { useEffect, useState } from "react";
 import socket from "@/libs/socket";
+import { toast, ToastContainer } from "react-toastify";
+import { useLock } from "@/contexts/LockContext";
 
 type Props = {
     selectedCams: Camera[],
@@ -17,31 +19,40 @@ export const DropZone = ({ selectedCams, setCams, cams }: Props) => {
     const { activeCamera, setActiveCamera } = useActiveCamera();
     const [viewedCameras, setViewedCameras] = useState<string[]>([]);
 
+    const { locked } = useLock();
+
     useEffect(() => {
         if (activeCamera && !viewedCameras.includes(activeCamera)) {
             setViewedCameras((prev) => [...prev, activeCamera]);
         }
     }, [activeCamera]);
 
-    const handleClick = () => {
-        // Limpa todas as câmeras selecionadas
+    const clearCams = () => {
         const updatedCams = cams.concat(selectedCams);
         setCams(updatedCams);
-
-        // Emite o estado atualizado para o servidor
         socket.emit("move-camera", { cams: updatedCams, selectedCams: [] });
     };
 
     const removeCam = (id: number) => {
-        // Remove a câmera da lista selecionada e adiciona na lista principal
         const updatedSelectedCams = selectedCams.filter((cam) => cam.id !== id);
         const updatedCams = [...cams, ...selectedCams.filter((cam) => cam.id === id)];
 
         setCams(updatedCams);
 
-        // Emite o estado atualizado para o servidor
         socket.emit("move-camera", { cams: updatedCams, selectedCams: updatedSelectedCams });
     };
+
+    const handleActiveCam = (url: string) => {
+        if(locked){
+            toast.error("Destrave o sistema para ativar uma das câmeras!", {
+                position: "top-right",
+                autoClose: 3000,
+            });
+
+            return;
+        }
+        setActiveCamera(url)
+    }
 
     return (
         <div ref={setNodeRef} className="zone mt-12">
@@ -65,7 +76,7 @@ export const DropZone = ({ selectedCams, setCams, cams }: Props) => {
                         ×
                     </button>
 
-                    <div onClick={() => setActiveCamera(item.url)}>
+                    <div onClick={() => handleActiveCam(item.url)}>
                         <CameraItem data={item} Drag={true}>
                             <button className={`${item.url === activeCamera ? 'bg-[#38B000]' : 'bg-[#CED4DA]'} px-3 py-1 rounded-md text-white`}>
                                 {item.url === activeCamera ? <p>Online</p> : <p>Offline</p>}
@@ -79,12 +90,14 @@ export const DropZone = ({ selectedCams, setCams, cams }: Props) => {
                 <div className="w-full flex justify-center items-center">
                     <button 
                         className="bg-white p-2 rounded-lg text-black cursor-pointer mt-4"
-                        onClick={handleClick}
+                        onClick={clearCams}
                     >
                         Limpar
                     </button>
                 </div>
             )}
+
+            <ToastContainer />
         </div>
     );
 };
