@@ -103,13 +103,6 @@ export const VideoArea = () => {
         
         const handleKeyDown = (e: KeyboardEvent) => {
           if (e.key.toLowerCase() === "q") {
-            if(locked){
-                toast.error("Você não pode abrir outra guia com o sistema bloqueado!", {
-                    position: "top-right",
-                    autoClose: 1500,
-                });
-                return;
-            }
             setRecording(true);
           }
         };

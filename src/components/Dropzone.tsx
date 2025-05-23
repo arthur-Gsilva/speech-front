@@ -5,7 +5,7 @@ import { HeaderZone } from "./ZoneHeader";
 import { useActiveCamera } from "@/contexts/CamContext";
 import { useEffect, useState } from "react";
 import socket from "@/libs/socket";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { useLock } from "@/contexts/LockContext";
 
 type Props = {
@@ -97,7 +97,6 @@ export const DropZone = ({ selectedCams, setCams, cams }: Props) => {
                 </div>
             )}
 
-            <ToastContainer />
         </div>
     );
 };
