@@ -100,7 +100,8 @@ export const VideoArea = () => {
 
     //ATIVAR O MIC APERTANDO Q
     useEffect(() => {
-        
+        if (locked) return;
+
         const handleKeyDown = (e: KeyboardEvent) => {
           if (e.key.toLowerCase() === "q") {
             setRecording(true);
@@ -109,7 +110,6 @@ export const VideoArea = () => {
     
         const handleKeyUp = (e: KeyboardEvent) => {
           if (e.key.toLowerCase() === "q") {
-            
             setRecording(false);
           }
         };
@@ -212,7 +212,7 @@ export const VideoArea = () => {
             <LockButton />
 
             {!locked &&
-                <p className="text-center">Ou pressione a letra <strong>Q</strong></p>
+                <p className="text-center">Pressione <strong>Q</strong> para ativar a voz</p>
             }
         
             <ToastContainer />
