@@ -100,7 +100,7 @@ export const VideoArea = () => {
 
     //ATIVAR O MIC APERTANDO Q
     useEffect(() => {
-        if (locked) return;
+        if(locked) return
 
         const handleKeyDown = (e: KeyboardEvent) => {
           if (e.key.toLowerCase() === "q") {
@@ -121,7 +121,7 @@ export const VideoArea = () => {
           window.removeEventListener("keydown", handleKeyDown);
           window.removeEventListener("keyup", handleKeyUp);
         };
-    }, []);
+    }, [locked]);
 
 
     const { isListening } = useSpeechRecognition(recording, setFound);
