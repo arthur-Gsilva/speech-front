@@ -1,4 +1,6 @@
 import { useActiveCamera } from "@/contexts/CamContext";
+import { cameras } from "@/data/cameras";
+import { getCam } from "@/services/useCam";
 import { useEffect, useState } from "react";
 
 const useSpeechRecognition = (
@@ -8,10 +10,10 @@ const useSpeechRecognition = (
   const [isListening, setIsListening] = useState<boolean>(false);
   const { setActiveCamera } = useActiveCamera();
 
-  useEffect(() => {
+    useEffect(() => {
     const SpeechRecognition =
-      // @ts-expect-error ignorando types para browser compatibility
-      window.SpeechRecognition || window.webkitSpeechRecognition;
+        // @ts-expect-error ignorando types para browser compatibility
+        window.SpeechRecognition || window.webkitSpeechRecognition;
 
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
@@ -20,48 +22,53 @@ const useSpeechRecognition = (
     recognition.onstart = () => setIsListening(true);
 
     recognition.onend = () => {
-      setIsListening(false);
-      if (isRecording) {
-        recognition.start(); // Reinicia automaticamente se ainda for pra gravar
-      }
+        setIsListening(false);
+
+        if (isRecording) {
+            recognition.start(); // Reinicia automaticamente se ainda for pra gravar
+        }
     };
 
     // @ts-expect-error ignorando types
-    recognition.onresult = async (event) => {
-      const transcript: string =
+    recognition.onresult = (event) => {
+    const transcript: string =
         event.results[event.results.length - 1][0].transcript.toLowerCase();
 
-      try {
-        const response = await fetch("http://localhost:5000/get-camera", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: transcript }),
-        });
+    console.log(transcript.replace(/[.,?!]/g, ""))
+    // Transforma o texto em palavras individuais
+    const palavrasFaladas = transcript
+        .toLowerCase()
+        .replace(/[.,?!]/g, "")
+        .split(" ");
 
-        const data = await response.json();
+    let cameraEncontrada = null;
 
-        if (data.camera_url) {
-          setActiveCamera(data.camera_url);
-          setFound(true);
-        } else {
-          console.log("Nenhuma câmera identificada.");
-          setFound(false);
+    for (const cam of cameras) {
+        if (transcript.includes(cam.keyword.toLowerCase())) {
+            cameraEncontrada = cam;
+            break;
         }
-      } catch (error) {
-        console.error("Erro ao enviar requisição:", error);
-      }
+    }
+
+    if (cameraEncontrada) {
+        setActiveCamera(cameraEncontrada.url);
+        setFound(true);
+    } else {
+        console.log("Nenhuma câmera correspondente encontrada.");
+        setFound(false);
+    }
     };
 
     if (isRecording) {
-      recognition.start();
+        recognition.start();
     }
 
     // Cleanup
     return () => {
-      recognition.onend = null;
-      recognition.stop();
+        recognition.onend = null;
+        recognition.stop();
     };
-  }, [isRecording]);
+    }, [isRecording]);
 
   return { isListening };
 };

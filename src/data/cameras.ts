@@ -18,7 +18,7 @@ export const cameras: Camera[] = [
     },
     {
         id: 3,
-        keyword: 'BR-101',
+        keyword: 'BR 101',
         address: 'Avenida norte de brasil',
         url: 'http://localhost:8888/cam6/index.m3u8'
     },
@@ -84,7 +84,7 @@ export const cameras: Camera[] = [
     },
     {
         id: 8,
-        keyword: 'PE-15',
+        keyword: 'PE 15',
         address: 'Pernambuco numero 15',
         url: 'http://localhost:8888/cam7/index.m3u8'
     },
