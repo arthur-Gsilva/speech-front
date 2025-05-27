@@ -67,7 +67,7 @@ const Page = () => {
         <>
             <Header />
 
-            <main className="flex flex-col lg:flex-row items-center gap-6 w-screen mt-3 px-20">
+            <main className="flex flex-col lg:flex-row items-center gap-6 max-w-screen mt-3 px-20 relative">
                 {user !== "Lucas" && <VideoArea />}
 
                 <DndContext collisionDetection={closestCorners} onDragEnd={handleDragEnd} onDragStart={handleDragStart}>

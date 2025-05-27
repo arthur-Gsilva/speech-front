@@ -19,15 +19,15 @@ export const LockButton = () => {
     };
 
     return(
-        <div className="w-full flex justify-center items-center my-1">
+        <div className=" absolute bottom-3 right-1 pr-20">
             <button 
-                className={`border-4 border-gray-100 shadow-xl w-28 h-10 rounded-full relative ${locked ? 'bg-red-500' : 'bg-blue-300'} cursor-pointer transition-all duration-500`}
+                className={`border-4 border-gray-100 shadow-xl  rounded-full relative  cursor-pointer transition-all duration-500`}
                 onClick={handleClick}
             >
                 <div 
-                    className={`absolute transition-all duration-500 ease-in-out bg-gray-100 rounded-full p-2 ${locked ? 'left-[100%] -translate-x-full' : 'left-0'} top-[-6px] border-3 border-gray-50 shadow-lg`}
+                    className={`absolute transition-all duration-500 ease-in-out p-2 bg-gray-100 rounded-full border-3 border-gray-50 shadow-lg`}
                 >
-                    {locked ? <FaLock className='text-2xl text-red-500'/> : <FaLockOpen className='text-2xl text-blue-300'/>}
+                    {locked ? <FaLock className='text-2xl text-red-500'/> : <FaLockOpen className='text-2xl text-gray-400'/>}
                 </div>
             </button>
 
