@@ -1,6 +1,5 @@
 import { useActiveCamera } from "@/contexts/CamContext";
 import { cameras } from "@/data/cameras";
-import { getCam } from "@/services/useCam";
 import { useEffect, useState } from "react";
 
 const useSpeechRecognition = (
@@ -35,11 +34,6 @@ const useSpeechRecognition = (
         event.results[event.results.length - 1][0].transcript.toLowerCase();
 
     console.log(transcript.replace(/[.,?!]/g, ""))
-    // Transforma o texto em palavras individuais
-    const palavrasFaladas = transcript
-        .toLowerCase()
-        .replace(/[.,?!]/g, "")
-        .split(" ");
 
     let cameraEncontrada = null;
 
