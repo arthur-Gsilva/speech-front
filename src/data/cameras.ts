@@ -57,4 +57,10 @@ export const cameras: Camera[] = [
         address: 'Bairro de Kennedy',
         url: 'http://localhost:8888/cam9_transcoded_output/index.m3u8'
     },
+    {
+        id: 10,
+        keyword: 'Arruda',
+        address: 'noite do arruda',
+        url: "https://34.104.32.249.nip.io/SP270-KM010/stream.m3u8"
+    },
 ]
