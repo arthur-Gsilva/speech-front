@@ -12,54 +12,41 @@ import { useCamerasSocket } from "@/hooks/useCameraSocket";
 import { useUserAuth } from "@/hooks/useUserAuth";
 import { Camera } from "@/types/Camera";
 import { Header } from "@/components/Header";
+import { cameras } from "@/data/cameras";
+import { VideoPreview } from "@/components/VideoPreview";
 
 const Page = () => {
-    const { cams, selectedCams, updateCameras } = useCamerasSocket();
-    const { user } = useUserAuth();
+    const { availableCams, selectedCams, updateSelectedCams } = useCamerasSocket();
     const [activeCamera, setActiveDragCamera] = useState<Camera | undefined>();
+    const { user } = useUserAuth();
     const { setActiveCamera } = useActiveCamera();
 
-    const setCams = (newCams: Camera[]) => {
-        updateCameras(newCams, selectedCams);
-    };
-
-    if (!user) return null;
 
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
         setActiveDragCamera(undefined);
 
-        if (!active || !over) return;
-        if (active.id === over.id) return;
+        if (!active || !over || active.id === over.id) return;
 
-        const draggedCamera = [...cams, ...selectedCams].find((cam) => String(cam.id) === active.id);
-        if (!draggedCamera) return;
+        const dragged = [...availableCams, ...selectedCams].find(cam => String(cam.id) === active.id);
+        if (!dragged) return;
 
-        let newCams = [...cams];
-        let newSelectedCams = [...selectedCams];
+        let updated = [...selectedCams];
 
         if (over.id === "dropzone") {
-            newCams = newCams.filter((cam) => cam.id !== draggedCamera.id);
-
-            if (!newSelectedCams.find((cam) => cam.id === draggedCamera.id)) {
-                newSelectedCams.push(draggedCamera);
-            }
+            if (!updated.find((cam) => cam.id === dragged.id)) updated.push(dragged);
         } else {
-            newSelectedCams = newSelectedCams.filter((cam) => cam.id !== draggedCamera.id);
-
-            if (!newCams.find((cam) => cam.id === draggedCamera.id)) {
-                newCams.push(draggedCamera);
-            }
+            updated = updated.filter((cam) => cam.id !== dragged.id);
         }
 
-        updateCameras(newCams, newSelectedCams);
+        updateSelectedCams(updated);
     };
 
     const handleDragStart = (event: DragStartEvent) => {
         const { active } = event;
         if (!active) return;
 
-        const camera = [...cams, ...selectedCams].find((cam) => String(cam.id) === active.id);
+        const camera = [...cameras, ...selectedCams].find((cam) => String(cam.id) === active.id);
         setActiveDragCamera(camera);
     };
 
@@ -67,13 +54,19 @@ const Page = () => {
         <>
             <Header />
 
-            <main className="flex flex-col lg:flex-row items-center gap-6 max-w-screen mt-3 px-20 relative">
-                {user !== "Lucas" && <VideoArea />}
+            <main className="flex flex-col lg:flex-row items-center gap-6 max-w-screen mt-3 px-20 ">
+                 <VideoArea />
 
                 <DndContext collisionDetection={closestCorners} onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
-                    <div className="grid grid-cols-2 gap-4 mb-12 w-full">
-                        <DropZone selectedCams={selectedCams} setCams={setCams} cams={cams} />
-                        {user !== "Arthur" && <CamBoard cams={cams} />}
+                    <div className="grid grid-cols-2 gap-4 mb-12 w-full relative">
+                        <DropZone
+                            selectedCams={selectedCams}
+                            updateSelectedCams={updateSelectedCams}
+                        />
+                        
+                        <CamBoard cams={availableCams} />
+                        
+                        
                     </div>
 
                     <DragOverlay>

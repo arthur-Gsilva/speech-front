@@ -3,6 +3,7 @@ import "./globals.css";
 import { CameraProvider } from "@/contexts/CamContext";
 import { LockProvider } from "@/contexts/LockContext";
 import type { Metadata } from 'next'
+import { Footer } from "@/components/Footer";
  
 export const metadata: Metadata = {
   title: 'Globo Câmeras',
@@ -31,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="pt-br">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#F8F9FA]`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#F8F9FA] max-h-screen`}
         suppressHydrationWarning
       >
 
@@ -42,6 +43,7 @@ export default function RootLayout({
             </LockProvider>
           </CameraProvider>
         
+        <Footer />
       </body>
     </html>
   );
