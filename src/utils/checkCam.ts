@@ -1,14 +1,11 @@
+// utils/checkCam.ts
 export async function checkCameraStatus(url: string): Promise<boolean> {
   try {
-    const res = await fetch(url, {
-      method: 'GET',
-      mode: 'cors', 
-      headers: {
-        'Accept': 'application/vnd.apple.mpegurl',
-      },
-    });
-
-    return res.ok; 
+    const encoded = encodeURIComponent(url);
+    const res = await fetch(`/api/check?url=${encoded}`);
+    if (!res.ok) return false;
+    const json = await res.json();
+    return Boolean(json.online);
   } catch {
     return false;
   }

@@ -9,10 +9,12 @@ import { useLock } from "@/contexts/LockContext";
 
 type Props = {
   selectedCams: Camera[];
-  updateSelectedCams: (cams: Camera[]) => void;
+  setSelectedCams: React.Dispatch<React.SetStateAction<Camera[]>>;
+  setAvailableCams: React.Dispatch<React.SetStateAction<Camera[]>>;
+  availableCams: Camera[];
 };
 
-export const DropZone = ({ selectedCams, updateSelectedCams }: Props) => {
+export const DropZone = ({ selectedCams, setSelectedCams }: Props) => {
   const { setNodeRef } = useDroppable({ id: "dropzone" });
   const { activeCamera, setActiveCamera } = useActiveCamera();
   const [viewedCameras, setViewedCameras] = useState<string[]>([]);
@@ -25,12 +27,12 @@ export const DropZone = ({ selectedCams, updateSelectedCams }: Props) => {
   }, [activeCamera]);
 
   const clearCams = () => {
-    updateSelectedCams([]);
+    setSelectedCams([]);
   };
 
   const removeCam = (id: number) => {
     const updated = selectedCams.filter((cam) => cam.id !== id);
-    updateSelectedCams(updated);
+    setSelectedCams(updated);
   };
 
   const handleActiveCam = (url: string) => {

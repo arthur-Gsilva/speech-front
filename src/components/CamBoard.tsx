@@ -14,7 +14,6 @@ type Props = {
 };
 
 
-
 export const CamBoard = ({ cams }: Props) => {
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [hoveredCamUrl, setHoveredCamUrl] = useState<string | null>(null);
@@ -34,22 +33,76 @@ export const CamBoard = ({ cams }: Props) => {
         )
         .sort((a, b) => a.id - b.id);
 
+
+    const BATCH_SIZE = 3;
+    const CACHE_TTL_MS = 30_000; // 30s
+
+    function getCacheKey(url: string) {
+    return `cam_status:${url}`;
+    }
+
+    async function checkInBatches(urls: string[]): Promise<Record<string, boolean>> {
+    const result: Record<string, boolean> = {};
+
+    for (let i = 0; i < urls.length; i += BATCH_SIZE) {
+        const batch = urls.slice(i, i + BATCH_SIZE);
+        const promises = batch.map((u) => checkCameraStatus(u).then((r) => ({ u, r })).catch(() => ({ u, r: false })));
+        const resolved = await Promise.all(promises);
+        resolved.forEach(({ u, r }) => {
+        result[u] = r;
+        // grava cache
+        try {
+            sessionStorage.setItem(getCacheKey(u), JSON.stringify({ ok: r, t: Date.now() }));
+        } catch {}
+        });
+    }
+
+    return result;
+    }
+
+    // dentro do componente:
     const [statusMap, setStatusMap] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
-        const checkStatuses = async () => {
-            const statuses: Record<string, boolean> = {};
+    let mounted = true;
 
-            for (const cam of cams) {
-                const isOnline = await checkCameraStatus(cam.url);
-                statuses[cam.url] = isOnline;
+    const checkStatuses = async () => {
+        const urls = filteredCams.map((c) => c.url);
+
+        // tentar pegar do cache
+        const cachedResults: Record<string, boolean> = {};
+        const toCheck: string[] = [];
+
+        for (const url of urls) {
+        try {
+            const raw = sessionStorage.getItem(getCacheKey(url));
+            if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && parsed.t && Date.now() - parsed.t < CACHE_TTL_MS) {
+                cachedResults[url] = parsed.ok;
+                continue;
             }
+            }
+        } catch {}
 
-            setStatusMap(statuses);
-        };
+        toCheck.push(url);
+        }
 
-        checkStatuses();
-    }, [cams]);
+        // atualiza com cache parcial imediatamente
+        if (mounted) setStatusMap((prev) => ({ ...prev, ...cachedResults }));
+
+        if (toCheck.length === 0) return;
+
+        const checked = await checkInBatches(toCheck);
+        if (mounted) setStatusMap((prev) => ({ ...prev, ...checked }));
+    };
+
+    checkStatuses();
+
+    return () => {
+        mounted = false;
+    };
+    }, [cams, searchQuery /* ou filteredCams dep */]);
 
     return (
         <div className="w-full h-full  rounded-lg">
