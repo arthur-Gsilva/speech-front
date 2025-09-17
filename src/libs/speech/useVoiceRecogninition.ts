@@ -1,5 +1,4 @@
 import { useActiveCamera } from "@/contexts/CamContext";
-import { cameras } from "@/data/cameras";
 import { useEffect, useState } from "react";
 
 const useSpeechRecognition = (
@@ -29,28 +28,32 @@ const useSpeechRecognition = (
     };
 
     // @ts-expect-error ignorando types
-    recognition.onresult = (event) => {
+    recognition.onresult = async (event) => {
     const transcript: string =
         event.results[event.results.length - 1][0].transcript.toLowerCase();
 
     console.log(transcript.replace(/[.,?!]/g, ""))
 
-    let cameraEncontrada = null;
+    try {
+        const res = await fetch("/api/get-camera", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: transcript }),
+        });
 
-    for (const cam of cameras) {
-        if (transcript.includes(cam.keyword.toLowerCase())) {
-            cameraEncontrada = cam;
-            break;
+        const data = await res.json();
+
+        if (res.ok && data.camera_url) {
+          setActiveCamera(data.camera_url);
+          setFound(true);
+        } else {
+          console.log("Nenhuma câmera correspondente encontrada.");
+          setFound(false);
         }
-    }
-
-    if (cameraEncontrada) {
-        setActiveCamera(cameraEncontrada.url);
-        setFound(true);
-    } else {
-        console.log("Nenhuma câmera correspondente encontrada.");
+      } catch (e) {
+        console.error("Erro ao consultar LLM:", e);
         setFound(false);
-    }
+      }
     };
 
     if (isRecording) {
