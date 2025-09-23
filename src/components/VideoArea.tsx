@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import { cameras } from "@/data/cameras";
 import { useActiveCamera } from "@/contexts/CamContext";
-
+import socket from "@/libs/socket"; 
 // ICONS
 import { FaMicrophoneAlt, FaMicrophoneAltSlash } from "react-icons/fa";
 import { IoVideocam, IoVideocamOff } from "react-icons/io5";
@@ -51,7 +51,18 @@ export const VideoArea = () => {
         const bc = new BroadcastChannel("camera-sync");
         bc.postMessage(activeCamera);
         bc.close();
+        socket.emit('change-camera', { url: activeCamera }); 
     }, [activeCamera]);
+
+    useEffect(() => {
+        socket.on('camera-updated', ({  url }) => {
+            setActiveCamera(url);
+        });
+
+        return () => {
+            socket.off('camera-updated');
+        };
+    }, []);
 
     // Troca o vídeo
     useEffect(() => {
@@ -119,6 +130,7 @@ export const VideoArea = () => {
 
     const handleCam = async () => {
         setActiveCamera("/main.m3u8");
+        socket.emit('change-camera', { url: "/main.m3u8" });
     };
 
     const handleFullscreen = async () => {

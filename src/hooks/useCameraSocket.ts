@@ -1,36 +1,44 @@
-// hooks/useCameraSocket.ts
 import { useEffect, useState } from "react";
 import socket from "@/libs/socket";
-import { cameras } from "@/data/cameras"; // fonte de dados fixa no front
 import { Camera } from "@/types/Camera";
 
 export const useCamerasSocket = () => {
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [cams, setCams] = useState<Camera[]>([]);
+  const [selectedCams, setSelectedCams] = useState<Camera[]>([]);
 
   useEffect(() => {
-    socket.on("init-selected-ids", (ids: number[]) => {
-      setSelectedIds(ids);
-    });
+    const handleInit = (data: { cams: Camera[]; selectedCams: Camera[] }) => {
+      setCams(data.cams);
+      setSelectedCams(data.selectedCams);
+    };
 
-    socket.on("update-selected-ids", (ids: number[]) => {
-      setSelectedIds(ids);
-    });
+    const handleUpdate = (data: { cams: Camera[]; selectedCams: Camera[] }) => {
+      setCams(data.cams);
+      setSelectedCams(data.selectedCams);
+    };
+
+    if (socket.connected) {
+      socket.emit("request-cameras");
+    } else {
+      socket.once("connect", () => {
+        socket.emit("request-cameras");
+      });
+    }
+
+    socket.on("init-cameras", handleInit);
+    socket.on("update-cameras", handleUpdate);
 
     return () => {
-      socket.off("init-selected-ids");
-      socket.off("update-selected-ids");
+      socket.off("init-cameras", handleInit);
+      socket.off("update-cameras", handleUpdate);
     };
   }, []);
 
-  // Computa as câmeras locais com base nos IDs recebidos
-  const selectedCams = cameras.filter((cam) => selectedIds.includes(cam.id));
-  const availableCams = cameras.filter((cam) => !selectedIds.includes(cam.id));
-
-  const updateSelectedCams = (newSelected: Camera[]) => {
-    const ids = newSelected.map((cam) => cam.id);
-    setSelectedIds(ids);
-    socket.emit("update-selected-ids", ids);
+  const updateCameras = (newCams: Camera[], newSelectedCams: Camera[]) => {
+    setCams(newCams);
+    setSelectedCams(newSelectedCams);
+    socket.emit("move-camera", { cams: newCams, selectedCams: newSelectedCams });
   };
 
-  return { availableCams, selectedCams, updateSelectedCams };
+  return { cams, selectedCams, updateCameras };
 };

@@ -89,7 +89,6 @@ export const CamBoard = ({ cams }: Props) => {
         toCheck.push(url);
       }
 
-      // aplica cache imediato
       if (mounted) setStatusMap((prev) => ({ ...prev, ...cachedResults }));
 
       if (toCheck.length > 0) {
@@ -103,7 +102,7 @@ export const CamBoard = ({ cams }: Props) => {
     return () => {
       mounted = false;
     };
-  }, [cams]); // só depende das câmeras
+  }, [cams]); 
 
   return (
     <div className="w-full h-full rounded-lg">
