@@ -12,6 +12,7 @@ import { useCamerasSocket } from "@/hooks/useCameraSocket";
 import { useUserAuth } from "@/hooks/useUserAuth";
 import { Camera } from "@/types/Camera";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
 const Page = () => {
     const { cams, selectedCams, updateCameras } = useCamerasSocket();
@@ -87,6 +88,8 @@ const Page = () => {
                     </DragOverlay>
                 </DndContext>
             </main>
+
+            <Footer />
         </>
     );
 };

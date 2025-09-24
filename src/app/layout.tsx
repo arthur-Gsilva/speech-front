@@ -43,7 +43,6 @@ export default function RootLayout({
             </LockProvider>
           </CameraProvider>
         
-        <Footer />
       </body>
     </html>
   );
