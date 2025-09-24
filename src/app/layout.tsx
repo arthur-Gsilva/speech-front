@@ -3,7 +3,6 @@ import "./globals.css";
 import { CameraProvider } from "@/contexts/CamContext";
 import { LockProvider } from "@/contexts/LockContext";
 import type { Metadata } from 'next'
-import { Footer } from "@/components/Footer";
  
 export const metadata: Metadata = {
   title: 'Globo Câmeras',

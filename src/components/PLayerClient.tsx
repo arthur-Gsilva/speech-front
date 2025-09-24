@@ -1,4 +1,3 @@
-// PlayerClient.tsx
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
@@ -15,7 +14,7 @@ export default function PlayerClient() {
     const hlsBRef = useRef<Hls | null>(null);
 
     const [activeVideo, setActiveVideo] = useState<'A' | 'B'>('A');
-    const [currentUrl, setCurrentUrl] = useState<string | null>(initialCameraUrl);
+    const [currentUrl] = useState<string | null>(initialCameraUrl);
 
     const loadStream = (videoEl: HTMLVideoElement, hlsRef: React.MutableRefObject<Hls | null>, url: string) => {
         if (hlsRef.current) {

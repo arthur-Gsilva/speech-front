@@ -1,4 +1,3 @@
-// app/api/check/route.ts
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const url = searchParams.get("url");
@@ -13,7 +12,8 @@ export async function GET(req: Request) {
     const text = await r.text();
     const valid = text.includes("#EXTM3U") || text.includes("#EXTINF");
     return Response.json({ online: valid, status: r.status });
-  } catch (e: any) {
+  } catch (e) {
+    // @ts-expect-error ignorando types
     return Response.json({ online: false, error: e.message });
   }
 }
