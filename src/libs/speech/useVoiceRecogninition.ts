@@ -1,4 +1,80 @@
+// import { useActiveCamera } from "@/contexts/CamContext";
+// import { useEffect, useState } from "react";
+
+// const useSpeechRecognition = (
+//   isRecording: boolean,
+//   setFound: (a: boolean | null) => void
+// ) => {
+//   const [isListening, setIsListening] = useState<boolean>(false);
+//   const { setActiveCamera } = useActiveCamera();
+
+//   useEffect(() => {
+//     const SpeechRecognition =
+//       // @ts-expect-error ignorando types para browser compatibility
+//       window.SpeechRecognition || window.webkitSpeechRecognition;
+
+//     const recognition = new SpeechRecognition();
+//     recognition.continuous = true;
+//     recognition.lang = "pt-BR";
+
+//     recognition.onstart = () => setIsListening(true);
+
+//     recognition.onend = () => {
+//       setIsListening(false);
+
+//       if (isRecording) {
+//         recognition.start(); // Reinicia automaticamente se ainda for pra gravar
+//       }
+//     };
+
+//     // @ts-expect-error ignorando types
+//     recognition.onresult = async (event) => {
+//       const transcript: string =
+//         event.results[event.results.length - 1][0].transcript.toLowerCase();
+
+//       const cleanTranscript = transcript.replace(/[.,?!]/g, "");
+//       console.log("Texto reconhecido:", cleanTranscript);
+
+//       try {
+//         const res = await fetch("http://localhost:5000/get-camera", {
+//           method: "POST",
+//           headers: { "Content-Type": "application/json" },
+//           body: JSON.stringify({ text: cleanTranscript }),
+//         });
+
+//         const data = await res.json();
+
+//         if (res.ok && data.camera_url) {
+//           setActiveCamera(data.camera_url);
+//           setFound(true);
+//         } else {
+//           console.warn("Nenhuma câmera encontrada:", data.error);
+//           setFound(false);
+//         }
+//       } catch (e) {
+//         console.error("Erro ao consultar Flask API:", e);
+//         setFound(false);
+//       }
+//     };
+
+//     if (isRecording) {
+//       recognition.start();
+//     }
+
+//     // Cleanup
+//     return () => {
+//       recognition.onend = null;
+//       recognition.stop();
+//     };
+//   }, [isRecording]);
+
+//   return { isListening };
+// };
+
+// export default useSpeechRecognition;
+
 import { useActiveCamera } from "@/contexts/CamContext";
+import { cameras } from "@/data/cameras";
 import { useEffect, useState } from "react";
 
 const useSpeechRecognition = (
@@ -28,32 +104,28 @@ const useSpeechRecognition = (
     };
 
     // @ts-expect-error ignorando types
-    recognition.onresult = async (event) => {
+    recognition.onresult = (event) => {
     const transcript: string =
         event.results[event.results.length - 1][0].transcript.toLowerCase();
 
     console.log(transcript.replace(/[.,?!]/g, ""))
 
-    try {
-        const res = await fetch("/api/get-camera", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: transcript }),
-        });
+    let cameraEncontrada = null;
 
-        const data = await res.json();
-
-        if (res.ok && data.camera_url) {
-          setActiveCamera(data.camera_url);
-          setFound(true);
-        } else {
-          console.log("Nenhuma câmera correspondente encontrada.");
-          setFound(false);
+    for (const cam of cameras) {
+        if (transcript.includes(cam.keyword.toLowerCase())) {
+            cameraEncontrada = cam;
+            break;
         }
-      } catch (e) {
-        console.error("Erro ao consultar LLM:", e);
+    }
+
+    if (cameraEncontrada) {
+        setActiveCamera(cameraEncontrada.url);
+        setFound(true);
+    } else {
+        console.log("Nenhuma câmera correspondente encontrada.");
         setFound(false);
-      }
+    }
     };
 
     if (isRecording) {
