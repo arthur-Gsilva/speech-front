@@ -19,7 +19,7 @@ export const LockButton = () => {
     };
 
     return(
-        <div className=" absolute bottom-3 right-1 pr-20">
+        <div className="absolute bottom-10 right-0 pr-20">
             <button 
                 className={`border-4 border-gray-100 shadow-xl  rounded-full relative  cursor-pointer transition-all duration-500`}
                 onClick={handleClick}
